@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SistemaBiblioteca_Projeto_Autoral.Utils
+{
+    public static class Validador
+    {
+        public static string ValidarTexto(string valor, string nomePropriedade)
+        {
+            if (string.IsNullOrWhiteSpace(valor))
+            {
+                throw new ArgumentException($"O campo {nomePropriedade} não pode ser vazio.");
+            }
+            return valor;
+        }
+
+        public static decimal ValidarNumero(decimal valor, string nomePropriedade)
+        {
+            if (valor < 0)
+            {
+                throw new ArgumentException($"O campo {nomePropriedade} não pode ser negativo.");
+            }
+            return valor;
+        }
+    }
+}
