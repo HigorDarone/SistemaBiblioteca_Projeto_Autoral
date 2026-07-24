@@ -3,6 +3,9 @@
 using SistemaBiblioteca_Projeto_Autoral.Models;
 using System.Xml.XPath;
 
+
+Usuario usuario1 = new Usuario("João Silva", "12345678900", "senha1", "joao.silva@email.com");
+
 Livro MeuLivro = new Livro( "O Senhor dos Anéis", "J.R.R. Tolkien", "HarperCollins", "Fantasia", 49.90m);
 
 
@@ -41,4 +44,66 @@ List<Livro> resultadosAtualizados = catalogo.BuscarPorGenero("");
 foreach (var livro in resultadosAtualizados)
 {
     Console.WriteLine($"Livro encontrado: {livro.Id} - {livro.Nome} - {livro.Autor}");
+}
+
+Console.WriteLine("----------------------------------");
+
+List<ItemCarrinho> carrinho = new List<ItemCarrinho>();
+
+carrinho.Add(new ItemCarrinho(livro1, 1));
+carrinho.Add(new ItemCarrinho(livro3, 2));
+carrinho.Add(new ItemCarrinho(livro5, 1));
+
+
+foreach (var item in carrinho)
+{
+    Console.WriteLine($"Item no carrinho: {item.Livro.Nome} - Quantidade: {item.Quantidade}");
+}
+
+
+
+Console.WriteLine("--------------ITEM CARRINHO--------------------");
+
+
+Carrinho carrinhoUsuario = new Carrinho(usuario1);
+
+carrinhoUsuario.AdicionarItemCarrinho(carrinho[0]);
+carrinhoUsuario.AdicionarItemCarrinho(carrinho[1]);
+carrinhoUsuario.AdicionarItemCarrinho(carrinho[2]);
+
+foreach (var item in carrinhoUsuario.ItensCarrinho)
+{
+    Console.WriteLine($"Item no carrinho do usuário:{item.Livro.Id} - {item.Livro.Nome} - Quantidade: {item.Quantidade}");
+}
+
+
+carrinhoUsuario.RemoverQuantidadeItemCarrinho(2);
+
+Console.WriteLine("----------------------------------");
+
+foreach (var item in carrinhoUsuario.ItensCarrinho)
+{
+    Console.WriteLine($"Item no carrinho do usuário:{item.Livro.Id} - {item.Livro.Nome} - Quantidade: {item.Quantidade}");
+}
+
+
+Console.WriteLine("--------------ITEM FINALIZADO--------------------");
+
+Pedido pedidoFinalizado = carrinhoUsuario.FinalizarCarrinho();
+
+Console.WriteLine($"Pedido de: {pedidoFinalizado.UsuarioLogado.Nome}");
+Console.WriteLine($"Data: {pedidoFinalizado.DataPedido}");
+Console.WriteLine($"Status: {pedidoFinalizado.Status}");
+Console.WriteLine($"Total: {pedidoFinalizado.TotalPedido}");
+
+foreach (var item in pedidoFinalizado.ItensPedido)
+{
+    Console.WriteLine($"- {item.Livro.Nome} | Quantidade: {item.Quantidade} | Preço unitário: {item.PrecoUnitario}");
+
+}
+
+Console.WriteLine("--------------ITEM CARRINHO--------------------");
+foreach (var item in carrinhoUsuario.ItensCarrinho)
+{
+    Console.WriteLine($"Item no carrinho do usuário:{item.Livro.Id} - {item.Livro.Nome} - Quantidade: {item.Quantidade}");
 }

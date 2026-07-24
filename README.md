@@ -12,7 +12,16 @@ Veja o roadmap completo do projeto, com todas as fases e decisões de arquitetur
 - Aplicado encapsulamento pensando em validação: alguns campos (`Documento`, `Email`, `Senha` em `Usuario`; `Disponivel` em `Livro`) usam `private set` para impedir alteração sem passar pelas regras da própria classe.
 - Criada uma pasta `Utils` com uma classe estática `Validador`, reaproveitável entre as classes já feitas. Ela verifica se um campo de texto foi preenchido (usando `string.IsNullOrWhiteSpace`) e se um número não é negativo, evitando repetir a mesma validação em cada propriedade.
 
-**Próximos passos:** `Catalogo`, `Carrinho`, `ItemPedido` e `Pedido` (ver roadmap para detalhes de cada um).
+**Parte 2**
+
+- Criada a classe `Catalogo`, que inicializa e guarda a lista de livros internamente (protegida, sem exposição direta) e oferece `AdicionarLivro` (com checagem de duplicata por nome e autor), `RemoverLivro`, `BuscarPorNome` e `BuscarPorGenero` (busca parcial, encontrando qualquer livro cujo nome ou gênero contenha o termo digitado, sem diferenciar maiúsculas de minúsculas).
+- Criada a classe `Carrinho`, cujo construtor recebe o `Usuario` dono do carrinho. Ela trabalha junto com a classe `ItemCarrinho` (que guarda um `Livro` e sua quantidade) e oferece `AdicionarItemCarrinho` (juntando quantidade se o livro já estiver no carrinho, em vez de duplicar), `RemoverItemCarrinho`, `RemoverQuantidadeItemCarrinho`, `CalcularTotal` e `FinalizarCarrinho`.
+- Criadas as classes `Pedido` e `ItemPedido`. O `Pedido` recebe no construtor o usuário logado e a lista de itens, registrando automaticamente a data de criação e o status inicial ("Pendente"). Cada `ItemPedido` guarda o `Livro`, a quantidade e o preço unitário pago naquele momento — esse preço fica congelado, mesmo que o preço do livro mude depois no catálogo.
+- `FinalizarCarrinho` (dentro de `Carrinho`) verifica se existem itens no carrinho antes de prosseguir (lançando uma exceção se estiver vazio), converte cada item do carrinho num `ItemPedido` (preservando o preço do momento), cria e devolve um `Pedido` novo, e esvazia o carrinho em seguida.
+
+Com isso, a Fase 1 do roadmap (modelagem do domínio) está concluída — todas as classes principais testadas manualmente no `Program.cs`.
+
+**Próximos passos:** Fase 2 do roadmap — montar um fluxo funcional no `Program.cs` (cadastro, login, navegação pelo catálogo, carrinho, finalização de pedido), com tratamento de erros via `try`/`catch`.
 
 ## Tecnologias
 

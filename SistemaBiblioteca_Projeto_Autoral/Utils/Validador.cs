@@ -15,7 +15,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Utils
             return valor;
         }
 
-        public static decimal ValidarNumero(decimal valor, string nomePropriedade)
+        public static decimal ValidarNumeroDecimal(decimal valor, string nomePropriedade)
         {
             if (valor < 0)
             {
@@ -24,6 +24,15 @@ namespace SistemaBiblioteca_Projeto_Autoral.Utils
             return valor;
         }
 
-      
+        public static int ValidarNumeroint(int valor, string nomePropriedade)
+        {
+            if (valor < 0)
+            {
+                throw new ArgumentException($"O campo {nomePropriedade} não pode ser negativo.");
+            }
+            return valor;
+        }
+
+
     }
 }
