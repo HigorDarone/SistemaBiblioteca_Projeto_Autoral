@@ -87,6 +87,23 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             return resultados;
         }
 
+        public Livro BuscarPorId(int id)
+        {
+            Livro resultado = null;
+            if (id > 0)
+            {
+                foreach (var livro in livros)
+                {
+                    if (livro.Id == id)
+                    {
+                        resultado = livro;
+                       
+                    }
+                }
+               
+            }
+            return resultado;
 
+        }
     }
 }

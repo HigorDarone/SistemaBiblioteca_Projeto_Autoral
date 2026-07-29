@@ -112,6 +112,8 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
         public Carrinho(Usuario usuario)
         {
             UsuarioLogado = usuario;
+
+           
         }
     }
 }

@@ -4,7 +4,7 @@ using SistemaBiblioteca_Projeto_Autoral.Models;
 using System.Xml.XPath;
 
 
-Usuario usuario1 = new Usuario("João Silva", "12345678900", "senha1", "joao.silva@email.com");
+/*Usuario usuario1 = new Usuario("João Silva", "12345678900", "senha1", "joao.silva@email.com");
 
 Livro MeuLivro = new Livro( "O Senhor dos Anéis", "J.R.R. Tolkien", "HarperCollins", "Fantasia", 49.90m);
 
@@ -106,4 +106,140 @@ Console.WriteLine("--------------ITEM CARRINHO--------------------");
 foreach (var item in carrinhoUsuario.ItensCarrinho)
 {
     Console.WriteLine($"Item no carrinho do usuário:{item.Livro.Id} - {item.Livro.Nome} - Quantidade: {item.Quantidade}");
+}
+*/
+
+
+Catalogo catalogo = new Catalogo();
+
+Usuario usuarioLogado = null;
+
+Carrinho carrinhoUsuario = null;
+
+
+bool continuar = true;
+
+while (continuar)
+{
+    Console.WriteLine("Bem-vindo ao Sistema de Biblioteca!");
+    Console.WriteLine("1. Cadastrar usuário");
+    Console.WriteLine("2. Catalogo De livros");
+    Console.WriteLine("3. Adicionar item ao carrinho");
+    Console.WriteLine("4. Remover item do carrinho");
+    Console.WriteLine("5. Finalizar pedido");
+    Console.WriteLine("6. Sair");
+    string opcao = Console.ReadLine();
+    switch (opcao)
+    {
+        case "1":
+            Console.Write("Digite o nome do usuário: ");
+            string nomeUsuario = Console.ReadLine();
+         
+            Console.Write("Digite o Documento do usuário: ");
+            string documento = Console.ReadLine();
+
+            Console.Write("Digite o email do usuário: ");
+            string email = Console.ReadLine();
+
+            Console.Write("Digite a senha do usuário: ");
+            string senhaUsuario = Console.ReadLine();
+
+            usuarioLogado = new Usuario(nomeUsuario, documento, email, senhaUsuario);
+
+            break;
+       
+
+        case "2":
+            Console.WriteLine("Escolha uma opção de busca:");
+            Console.WriteLine("1. Buscar por nome");
+            Console.WriteLine("2. Buscar por gênero");
+            Console.WriteLine("3. Adicionar livro ao catálogo");
+            Console.WriteLine("4. Remover livro do catálogo");
+            string opcaoCatalogo = Console.ReadLine();
+            switch (opcaoCatalogo)
+            {
+                case "1":
+                    Console.WriteLine("Digite o nome do livro que deseja buscar:");
+                    string nomeBusca = Console.ReadLine();
+                    List<Livro> livrosEncontradosNome = catalogo.BuscarPorNome(nomeBusca);
+                    foreach (var l in livrosEncontradosNome)
+                    {
+                        Console.WriteLine($"- {l.Nome} | Autor: {l.Autor} | Editora: {l.Editora} | Preço: {l.Preco}");
+                    }
+                    break;
+
+                case "2":
+                    Console.WriteLine("Digite o Gênero que deseja buscar:");
+
+                    string generoBusca = Console.ReadLine();
+
+                    List<Livro> livrosEncontrados = catalogo.BuscarPorGenero(generoBusca);
+
+                    foreach (var l in livrosEncontrados)
+                    {
+                        Console.WriteLine($"- {l.Nome} | Autor: {l.Autor} | Editora: {l.Editora} | Preço: {l.Preco}");
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("Digite o nome do livro que deseja adicionar ao catálogo:");
+                    string nomeAdicionar = Console.ReadLine();
+                    Console.WriteLine("Digite o nome do autor do livro:");
+                    string autorAdicionar = Console.ReadLine();
+                    Console.WriteLine("Digite a editora do livro:");
+                    string editoraAdicionar = Console.ReadLine();
+                    Console.WriteLine("Digite o gênero do livro:");
+                    string generoAdicionar = Console.ReadLine();
+                    Console.WriteLine("Digite o preço do livro:");
+                    decimal precoAdicionar = decimal.Parse(Console.ReadLine());
+
+                    Livro livroParaAdicionar = new Livro(nomeAdicionar, autorAdicionar, editoraAdicionar, generoAdicionar, precoAdicionar);
+                    catalogo.AdicionarLivro(livroParaAdicionar);
+                    Console.WriteLine("Livro adicionado ao catálogo com sucesso!");
+                    break;
+
+                case "4":
+                    Console.WriteLine("Digite o ID do livro que deseja remover do catálogo:");
+                    int IdRemover = int.Parse(Console.ReadLine());
+                    catalogo.RemoverLivro(IdRemover);
+                    Console.WriteLine("Livro removido do catálogo com sucesso!");
+                    break;
+            }
+            break;
+        case "3":
+            if (usuarioLogado == null)
+            {
+                Console.WriteLine("Você precisa estar logado para acessar o catálogo.");
+                break;
+
+            }
+            Console.WriteLine("Digite o ID do livro que deseja adicionar ao carrinho:");
+            int idLivroAdicionar = int.Parse(Console.ReadLine());
+ 
+            Livro resultadoIdlivro = catalogo.BuscarPorId(idLivroAdicionar);
+
+            Console.WriteLine("Digite a quantidade que deseja adicionar ao carrinho:");
+            int quantidade = int.Parse(Console.ReadLine());
+
+            carrinhoUsuario = new Carrinho(usuarioLogado);
+
+            ItemCarrinho itemCarrinho = new ItemCarrinho(resultadoIdlivro, quantidade);
+
+            carrinhoUsuario.AdicionarItemCarrinho(itemCarrinho);
+
+
+            break;
+        case "4":
+            // Lógica para remover item do carrinho
+            break;
+        case "5":
+            // Lógica para finalizar pedido
+            break;
+        case "6":
+            continuar = false;
+            break;
+        default:
+            Console.WriteLine("Opção inválida. Tente novamente.");
+            break;
+    }
 }
