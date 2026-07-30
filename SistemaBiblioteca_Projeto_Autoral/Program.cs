@@ -221,8 +221,6 @@ while (continuar)
             Console.WriteLine("Digite a quantidade que deseja adicionar ao carrinho:");
             int quantidade = int.Parse(Console.ReadLine());
 
-            carrinhoUsuario = new Carrinho(usuarioLogado);
-
             ItemCarrinho itemCarrinho = new ItemCarrinho(resultadoIdlivro, quantidade);
 
             carrinhoUsuario.AdicionarItemCarrinho(itemCarrinho);
