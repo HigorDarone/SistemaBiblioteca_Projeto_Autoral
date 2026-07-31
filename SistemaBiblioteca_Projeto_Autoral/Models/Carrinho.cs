@@ -107,13 +107,34 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             return new Pedido(UsuarioLogado, itensPedido);
 
         }
+        public ItemCarrinho BuscarPorId(int id)
+        {
+            ItemCarrinho resultado = null;
+            if (id > 0)
+            {
+                foreach (var item in itenscarrinho)
+                {
+                    if (item.Livro.Id == id)
+                    {
+                        resultado = item;
+                    }
+                }
+
+            }
+            return resultado;
+        }
+
+        public List<ItemCarrinho> ListarItensCarrinho()
+        {
+            return itenscarrinho;
+        }
+
 
         //contrutor da classe Carrinho, recebe o usuário logado e inicializa a lista de itens do carrinho
         public Carrinho(Usuario usuario)
         {
             UsuarioLogado = usuario;
-
-           
+   
         }
     }
 }
