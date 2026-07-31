@@ -50,11 +50,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
         //Colocando private set para que a propriedade só possa ser alterada de dentro da classe, assim podendo mudar apenas quando o
         // livro for para um pedido ou quando for devolvido, e não de fora da classe
         public bool Disponivel { get; private set; }
-
-        public void DefinirId(int id)
-        {
-            Id = id;
-        }
+  
 
         public Livro(string nome, string autor, string editora, string genero, decimal preco)
         {

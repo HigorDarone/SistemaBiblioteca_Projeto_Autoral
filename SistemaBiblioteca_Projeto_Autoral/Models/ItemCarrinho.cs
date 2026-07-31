@@ -7,6 +7,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
 {
     public class ItemCarrinho
     {
+        public int Id { get; private set; }
         public Livro Livro { get; private set; }
 
 
@@ -22,6 +23,8 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             Livro = livro;
             Quantidade = quantidade;
         }
+
+        private ItemCarrinho() { }
 
     }
 

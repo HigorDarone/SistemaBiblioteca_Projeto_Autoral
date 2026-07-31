@@ -21,7 +21,21 @@ Veja o roadmap completo do projeto, com todas as fases e decisões de arquitetur
 
 Com isso, a Fase 1 do roadmap (modelagem do domínio) está concluída — todas as classes principais testadas manualmente no `Program.cs`.
 
-**Próximos passos:** Fase 2 do roadmap — montar um fluxo funcional no `Program.cs` (cadastro, login, navegação pelo catálogo, carrinho, finalização de pedido), com tratamento de erros via `try`/`catch`.
+**Parte 3**
+
+- Montado o fluxo interativo no `Program.cs`: um menu em loop (`while` controlado por uma variável booleana `continuar`) com sete opções, simulando as principais ações do sistema.
+- Opção 1 (cadastrar usuário): recebe nome, documento, email e senha, cria um `Usuario` e já assume esse usuário como o logado no momento — ainda não é um login de verdade, já que ainda não existe persistência em banco de dados (isso fica pra Fase 3). Já cria também o `Carrinho` vinculado a esse usuário, junto com o cadastro.
+- Opção 2 (catálogo): um submenu com buscar por nome, buscar por gênero, adicionar livro, remover livro e listar todos os livros. Ao adicionar um livro, o preço digitado é validado com `TryParse` antes de criar o `Livro` e adicioná-lo ao catálogo.
+- Criada uma função `VerificarLogin()`, reaproveitada nas opções que exigem um usuário logado (adicionar, listar e remover item do carrinho, finalizar pedido) — ela verifica se existe um usuário logado e avisa quando não existe, em vez de repetir a mesma checagem em cada opção.
+- Opção 3 (adicionar ao carrinho): lista os livros do catálogo, pede o Id do livro e a quantidade desejada, e adiciona o item ao carrinho do usuário logado.
+- Opções 4 e 5: listar e remover itens do carrinho.
+- Opção 6 (finalizar pedido): chama `FinalizarCarrinho()`, que transforma os itens do carrinho num `Pedido` com o total calculado. O caso de tentar finalizar um carrinho vazio (que lança uma exceção) é tratado com `try`/`catch`, mostrando uma mensagem amigável em vez de derrubar o programa.
+- A maioria dos pontos onde o usuário digita um número usa `TryParse`, para evitar que uma entrada inválida quebre o programa.
+- Opção 7 encerra o programa.
+
+Com isso, a Fase 2 do roadmap (orquestração em memória) está praticamente concluída — o fluxo completo (cadastro, catálogo, carrinho, finalização de pedido) já funciona de ponta a ponta pelo console. Alguns ajustes pontuais ainda estão sendo testados e corrigidos.
+
+**Próximos passos:** Fase 3 do roadmap — persistência com Entity Framework Core, substituindo as listas em memória por um banco de dados real.
 
 ## Tecnologias
 
@@ -31,4 +45,5 @@ Planejadas: Entity Framework Core (persistência em banco de dados), ASP.NET Cor
 
 ## Como rodar
 
-*(seção a preencher quando o projeto tiver um fluxo executável — Fase 2 do roadmap)*
+1. Abra a pasta `SistemaBiblioteca_Projeto_Autoral` no Visual Studio e rode o projeto (F5), ou, via terminal, entre na pasta do projeto e rode `dotnet run`.
+2. O menu interativo aparece no console. Comece pela opção 1 (cadastrar usuário) para poder usar o carrinho, depois explore o catálogo (opção 2) para cadastrar livros antes de adicioná-los ao carrinho.

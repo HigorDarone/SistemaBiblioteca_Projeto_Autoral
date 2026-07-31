@@ -7,6 +7,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
 {
     public class Pedido
     {
+        public int Id { get; private set; }
         public Usuario UsuarioLogado { get; private set; }
 
         private List<ItemPedido> itenspedido = new List<ItemPedido>();
@@ -42,6 +43,8 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             Status = "PENDENTE";
             DataPedido = DateTime.Now;
         }
+
+        private Pedido() { }
 
     }
 }

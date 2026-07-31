@@ -7,6 +7,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
 {
     public class ItemPedido
     {
+        public int Id { get; private set; }
         public Livro Livro { get; private set; }
 
         private int quantidade;
@@ -29,6 +30,8 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             Quantidade = quantidade;
             PrecoUnitario = precoUnitario;
         }
+
+        private ItemPedido() { }
 
 
     }
