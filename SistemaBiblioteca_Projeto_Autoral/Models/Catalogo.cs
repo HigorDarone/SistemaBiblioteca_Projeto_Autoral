@@ -42,16 +42,16 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
 
         public string RemoverLivro(int id)
         {
-            foreach (var livro in context.Livros)
+            Livro buscarlivroporId = BuscarPorId(id);
+
+            if (buscarlivroporId == null)
             {
-                if (livro.Id == id)
-                {
-                    context.Livros.Remove(livro);
-                    context.SaveChanges();
-                    return $"Livro com ID {id} removido do catálogo.";
-                }
+                return $"Livro com ID {id} não encontrado no catálogo.";
             }
-            return $"Livro com ID {id} não encontrado no catálogo.";
+            
+            context.Livros.Remove(buscarlivroporId);
+            context.SaveChanges();
+            return $"Livro com ID {id} removido do catálogo.";
         }
 
         public List<Livro> BuscarPorNome(string nome)
@@ -97,10 +97,6 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             return context.Livros.ToList();
         }
 
-        public List<Livro> ListarLivros()
-        {
-            return livros;
-        }
 
         public Livro BuscarPorId(int id)
         {
@@ -121,8 +117,8 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
              */
 
             return context.Livros
-                .Where(livro => livro.Id)
-                .ToList();
+                .Where(livro => livro.Id == id)
+                .FirstOrDefault();
 
         }
     }

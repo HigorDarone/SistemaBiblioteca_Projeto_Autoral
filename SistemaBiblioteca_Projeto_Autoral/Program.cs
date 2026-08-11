@@ -1,10 +1,12 @@
 ﻿
 
+using SistemaBiblioteca_Projeto_Autoral.Data;
 using SistemaBiblioteca_Projeto_Autoral.Models;
 using System.Xml.XPath;
 
+AppDbContext appDbContext = new AppDbContext();
 
-Catalogo catalogo = new Catalogo();
+Catalogo catalogo = new Catalogo(appDbContext);
 
 Usuario usuarioLogado = null;
 
