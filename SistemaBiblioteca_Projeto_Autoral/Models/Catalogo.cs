@@ -40,6 +40,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             return $"Id '{livro.Id}' Livro '{livro.Nome}' do Autor '{livro.Autor}' adicionado ao catálogo.";
         }
 
+
         public string RemoverLivro(int id)
         {
             Livro buscarlivroporId = BuscarPorId(id);

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using SistemaBiblioteca_Projeto_Autoral.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace SistemaBiblioteca_Projeto_Autoral.Models
 {
@@ -20,20 +22,36 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             get { return new List<ItemCarrinho>(itenscarrinho); }
         }
 
+        private AppDbContext context;
+        public Carrinho(Usuario usuarioLogado, AppDbContext context)
+        {
+            this.UsuarioLogado = usuarioLogado;
+            this.context = context;
+
+            context.Carrinhos.Add(this);
+            context.SaveChanges();
+        }
+
+        private Carrinho() { }
+
 
         //recebe o item do carrinho e verifica se já existe um item com o mesmo id,
         //se sim, apenas aumenta a quantidade, caso contrário adiciona o item na lista
         public void AdicionarItemCarrinho(ItemCarrinho item)
         {
-            foreach (var itemCarrinho in itenscarrinho)
+
+            if(context.ItemCarrinhos.Any(itens => itens.Livro.Id == item.Livro.Id && itens.CarrinhoId == this.Id))
             {
-                if (itemCarrinho.Livro.Id == item.Livro.Id)
-                {
-                    itemCarrinho.Quantidade += item.Quantidade;
-                    return;
-                }
+                var itemExistente = context.ItemCarrinhos.First(i => i.Livro.Id == item.Livro.Id && i.CarrinhoId == this.Id);
+                itemExistente.Quantidade += item.Quantidade;
+                context.SaveChanges();
+                return;
             }
-            itenscarrinho.Add(item);
+             
+            item.DefinirCarrinhoId(this.Id);
+            context.ItemCarrinhos.Add(item);
+            context.SaveChanges();
+
         }
 
 
@@ -41,48 +59,52 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
         //se a quantidade for menor ou igual a 0, remove o item da lista
         public string RemoverQuantidadeItemCarrinho(int id)
         {
-            foreach (var itemCarrinho in itenscarrinho)
-            {
 
-                itemCarrinho.Quantidade--;
-                if (itemCarrinho.Livro.Id == id)
-                {
-                    if (itemCarrinho.Quantidade <= 0)
-                    {
-                        itenscarrinho.Remove(itemCarrinho);
-                    }
-                    
-                    return "Item removido com sucesso.";
-                }
+            var itemcarrinhoremover = context.ItemCarrinhos.FirstOrDefault(i => i.Livro.Id == id && i.CarrinhoId == this.Id);
+            
+
+            if(itemcarrinhoremover == null)
+            {
+                return "Item não encontrado no carrinho.";  
             }
-            return "Item não encontrado no carrinho.";
+
+            if(itemcarrinhoremover.Quantidade <= 1)
+            {
+                context.ItemCarrinhos.Remove(itemcarrinhoremover);
+                context.SaveChanges();
+                return "Item removido com sucesso.";
+            }
+            
+                itemcarrinhoremover.Quantidade--;
+                context.SaveChanges();
+                return "Quantidade removida do item.";
+            
+            
         }
 
         //recebe o id do item e remove o item do carrinho
         public string RemoverItemCarrinho(int id)
         {
-            foreach (var itemCarrinho in itenscarrinho)
+            
+            if(context.ItemCarrinhos.Any(i => i.Livro.Id == id && i.CarrinhoId == this.Id))
             {
-                if (itemCarrinho.Livro.Id == id)
-                {
-                    itenscarrinho.Remove(itemCarrinho);
-                    return "Item removido com sucesso.";
-                }
+                var itemCarrinho = context.ItemCarrinhos.First(i => i.Livro.Id == id && i.CarrinhoId == this.Id);
+                context.ItemCarrinhos.Remove(itemCarrinho);
+                context.SaveChanges();
+                return "Item removido com sucesso.";
             }
             return "Item não encontrado no carrinho.";
+            
         }
 
 
         //calcula o total do carrinho,
         //multiplicando o preço do livro pela quantidade de cada item e somando todos os itens
         public decimal CalcularTotal()
-        {
-            decimal total = 0;
-            foreach (var itemCarrinho in itenscarrinho)
-            {
-                total += itemCarrinho.Livro.Preco * itemCarrinho.Quantidade;
-            }
-            return total;
+        { 
+            return context.ItemCarrinhos
+                .Where(item => item.CarrinhoId == this.Id)
+                .Sum(item => item.Livro.Preco * item.Quantidade);
         }
 
 
@@ -90,53 +112,43 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
         // para que o preço não seja alterado caso o preço do livro mude no futuro
         public Pedido FinalizarCarrinho()
         {
-            List<ItemPedido> itensPedido = new List<ItemPedido>();
+           var listacarrinho = context.ItemCarrinhos.Where(i => i.CarrinhoId == this.Id).ToList();
 
-            if(itenscarrinho.Count == 0)
+
+            if(listacarrinho.Count() == 0)
             {
                 throw new InvalidOperationException("O carrinho está vazio. Não é possível finalizar o pedido.");
             }
 
-            foreach (var itemCarrinho in itenscarrinho)
+            List<ItemPedido> itensPedido = new List<ItemPedido>();
+
+            foreach (var itemCarrinho in listacarrinho)
             {
                 itensPedido.Add(new ItemPedido(itemCarrinho.Livro, itemCarrinho.Quantidade, itemCarrinho.Livro.Preco));
             }
 
-            itenscarrinho.Clear();
+            Pedido pedidofinalizado = new Pedido(UsuarioLogado, itensPedido);
 
-            return new Pedido(UsuarioLogado, itensPedido);
+            context.ItemCarrinhos.RemoveRange(listacarrinho);
+            context.Pedidos.Add(pedidofinalizado);
+            context.SaveChanges();
 
+            return pedidofinalizado;
         }
         public ItemCarrinho BuscarPorId(int id)
         {
-            ItemCarrinho resultado = null;
-            if (id > 0)
-            {
-                foreach (var item in itenscarrinho)
-                {
-                    if (item.Livro.Id == id)
-                    {
-                        resultado = item;
-                    }
-                }
-
-            }
-            return resultado;
+            return context.ItemCarrinhos.
+                FirstOrDefault(i => i.Livro.Id == id && i.CarrinhoId == this.Id);
         }
 
         public List<ItemCarrinho> ListarItensCarrinho()
         {
-            return itenscarrinho;
+
+            return context.ItemCarrinhos.Where(i => i.CarrinhoId == this.Id)
+            .ToList();
+           
         }
 
-
-        //contrutor da classe Carrinho, recebe o usuário logado e inicializa a lista de itens do carrinho
-        public Carrinho(Usuario usuario)
-        {
-            UsuarioLogado = usuario;
-   
-        }
-
-        private Carrinho() { }
+       
     }
 }

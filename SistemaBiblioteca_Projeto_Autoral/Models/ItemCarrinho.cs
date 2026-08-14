@@ -7,7 +7,17 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
 {
     public class ItemCarrinho
     {
+
         public int Id { get; private set; }
+
+        public int CarrinhoId { get; private set; }
+
+
+        public void DefinirCarrinhoId(int carrinhoId)
+        {
+            CarrinhoId = carrinhoId;
+        }
+            
         public Livro Livro { get; private set; }
 
 

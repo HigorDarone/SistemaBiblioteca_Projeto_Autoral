@@ -34,6 +34,8 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
           private set { senha = Validador.ValidarTexto(value, "Senha"); }
         }
 
+        public bool EhAdministrador { get; private set; }
+
         public Usuario (string nome, string documento, string email, string senha)
         {
             Nome = nome;

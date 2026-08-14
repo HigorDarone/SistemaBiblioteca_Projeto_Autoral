@@ -8,6 +8,8 @@ AppDbContext appDbContext = new AppDbContext();
 
 Catalogo catalogo = new Catalogo(appDbContext);
 
+GerenciadorUsuarios gerenciadorUsuarios = new GerenciadorUsuarios(appDbContext);
+
 Usuario usuarioLogado = null;
 
 Carrinho carrinhoUsuario = null;
@@ -44,14 +46,27 @@ while (continuar)
 
             usuarioLogado = new Usuario(nomeUsuario, documento, email, senhaUsuario);
 
-            carrinhoUsuario = new Carrinho(usuarioLogado);
+            string resultadoGerenciarUsuario = gerenciadorUsuarios.AdicionarUsuario(usuarioLogado);
 
-            Console.Write($"Usuário {usuarioLogado.Nome} cadastrado com sucesso!");
+            if (usuarioLogado.Id != 0)
+            {
+                
+                carrinhoUsuario = new Carrinho(usuarioLogado);
+
+                Console.Write($"Usuário {usuarioLogado.Nome} cadastrado com sucesso!");
+
+                break;
+            }
+
+            usuarioLogado = null;
+            Console.WriteLine(resultadoGerenciarUsuario);
 
             break;
 
 
         case "2":
+
+
             Console.WriteLine("Escolha uma opção de busca:");
             Console.WriteLine("1. Buscar por nome");
             Console.WriteLine("2. Buscar por gênero");
@@ -86,6 +101,16 @@ while (continuar)
                     break;
 
                 case "3":
+                    if (!VerificarLogin())
+                    {
+                        Console.WriteLine("Acesso negado. Faça login primeiro.");
+                        break;
+                    }
+                    if (usuarioLogado.EhAdministrador == false)
+                    {
+                        Console.WriteLine("Apenas administradores podem adicionar livros ao catálogo.");
+                        break;
+                    }
                     Console.WriteLine("Digite o nome do livro que deseja adicionar ao catálogo:");
                     string nomeAdicionar = Console.ReadLine();
                     Console.WriteLine("Digite o nome do autor do livro:");
@@ -112,6 +137,16 @@ while (continuar)
                     }
 
                 case "4":
+                     if (!VerificarLogin())
+                    {
+                        Console.WriteLine("Acesso negado. Faça login primeiro.");
+                        break;
+                    }
+                    if (usuarioLogado.EhAdministrador == false)
+                    {
+                        Console.WriteLine("Apenas administradores podem Remover livros ao catálogo.");
+                        break;
+                    }
                     Console.WriteLine("Digite o ID do livro que deseja remover do catálogo:");
                     Console.WriteLine("Digite 7 para sair:");
 
