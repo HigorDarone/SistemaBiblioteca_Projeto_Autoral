@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace SistemaBiblioteca_Projeto_Autoral.Models
 {
@@ -10,19 +11,10 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
     {
         public int Id { get; private set; }
         public Usuario UsuarioLogado { get; private set; }
-
-
-        //lista privada para guardar informações do carrinho, não pode ser alterada externamente    
-        private List<ItemCarrinho> itenscarrinho = new List<ItemCarrinho>();
-
-
-        //lista pública para acessar os itens do carrinho, mas não permite alteração direta
-        public List<ItemCarrinho> ItensCarrinho
-        {
-            get { return new List<ItemCarrinho>(itenscarrinho); }
-        }
-
         private AppDbContext context;
+
+
+        // construtor que recebe o usuário logado e o contexto do banco de dados, adiciona o carrinho no banco de dados e salva as alterações
         public Carrinho(Usuario usuarioLogado, AppDbContext context)
         {
             this.UsuarioLogado = usuarioLogado;
@@ -145,6 +137,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
         {
 
             return context.ItemCarrinhos.Where(i => i.CarrinhoId == this.Id)
+            .Include(i => i.Livro)
             .ToList();
            
         }

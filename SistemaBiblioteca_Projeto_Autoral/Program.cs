@@ -21,7 +21,7 @@ bool continuar = true;
 while (continuar)
 {
     Console.WriteLine("Bem-vindo ao Sistema de Biblioteca!");
-    Console.WriteLine("1. Cadastrar usuário");
+    Console.WriteLine("1. Cadastrar usuário ou fazer login");
     Console.WriteLine("2. Catalogo De livros");
     Console.WriteLine("3. Adicionar item ao carrinho");
     Console.WriteLine("4. Listar itens do carrinho");
@@ -32,38 +32,86 @@ while (continuar)
     switch (opcao)
     {
         case "1":
-            Console.Write("Digite o nome do usuário: ");
-            string nomeUsuario = Console.ReadLine();
 
-            Console.Write("Digite o Documento do usuário: ");
-            string documento = Console.ReadLine();
+            Console.WriteLine("1. Cadastrar novo usuário");
+            Console.WriteLine("2. Fazer login");
+            Console.WriteLine("3. Voltar");
 
-            Console.Write("Digite o email do usuário: ");
-            string email = Console.ReadLine();
+            string opcaoUsuario = Console.ReadLine();
 
-            Console.Write("Digite a senha do usuário: ");
-            string senhaUsuario = Console.ReadLine();
-
-            usuarioLogado = new Usuario(nomeUsuario, documento, email, senhaUsuario);
-
-            string resultadoGerenciarUsuario = gerenciadorUsuarios.AdicionarUsuario(usuarioLogado);
-
-            if (usuarioLogado.Id != 0)
+            switch (opcaoUsuario)
             {
-                
-                carrinhoUsuario = new Carrinho(usuarioLogado);
+                case "1":
+                    Console.Write("Digite o nome do usuário: ");
+                    string nomeUsuario = Console.ReadLine();
 
-                Console.Write($"Usuário {usuarioLogado.Nome} cadastrado com sucesso!");
+                    Console.Write("Digite o Documento do usuário: ");
+                    string documento = Console.ReadLine();
 
-                break;
+                    Console.Write("Digite o email do usuário: ");
+                    string email = Console.ReadLine();
+
+                    Console.Write("Digite a senha do usuário: ");
+                    string senhaUsuario = Console.ReadLine();
+
+                    usuarioLogado = new Usuario(nomeUsuario, documento, email, senhaUsuario);
+
+                    string resultadoGerenciarUsuario = gerenciadorUsuarios.AdicionarUsuario(usuarioLogado);
+
+                    if (usuarioLogado.Id != 0)
+                    {
+
+                        carrinhoUsuario = new Carrinho(usuarioLogado, appDbContext);
+
+                        Console.Write($"Usuário {usuarioLogado.Nome} cadastrado com sucesso!");
+
+                        break;
+                    }
+
+                    usuarioLogado = null;
+                    Console.WriteLine(resultadoGerenciarUsuario);
+
+                    break;
+
+                case "2":
+
+                    Console.Write("Digite o Email do usuário: ");
+                    string emailUsuarioLogin = Console.ReadLine();
+
+                    Console.Write("Digite a senha do usuário: ");
+                    string senhaUsuarioLogin = Console.ReadLine();
+
+                    usuarioLogado = gerenciadorUsuarios.Login(emailUsuarioLogin, senhaUsuarioLogin);
+
+                    if (usuarioLogado != null)
+                    {
+                        Carrinho carrinhoExistente = appDbContext.Carrinhos
+                         .FirstOrDefault(c => c.UsuarioLogado.Id == usuarioLogado.Id);
+                        
+                        if(carrinhoExistente != null)
+                        {
+                           carrinhoUsuario = carrinhoExistente;
+                           
+                        }
+                        else
+                        {
+                            carrinhoUsuario = new Carrinho(usuarioLogado, appDbContext);
+                            
+                        }
+                            Console.WriteLine($"Bem-vindo, {usuarioLogado.Nome}!");
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Credenciais inválidas.");
+                    }
+
+                    break;
+
+                case "3":
+                    break;
             }
-
-            usuarioLogado = null;
-            Console.WriteLine(resultadoGerenciarUsuario);
-
             break;
-
-
         case "2":
 
 
@@ -74,7 +122,9 @@ while (continuar)
             Console.WriteLine("4. Remover livro do catálogo");
             Console.WriteLine("5. Listar todos os livros");
             Console.WriteLine("6. voltar");
+
             string opcaoCatalogo = Console.ReadLine();
+
             switch (opcaoCatalogo)
             {
                 case "1":
@@ -242,6 +292,7 @@ while (continuar)
             {
 
                 List<ItemCarrinho> itensCarrinho = carrinhoUsuario.ListarItensCarrinho();
+
                 foreach (var item in itensCarrinho)
                 {
                     Console.WriteLine($"- Id: {item.Livro.Id} | Nome: {item.Livro.Nome} | Quantidade: {item.Quantidade} | Preço unitário: {item.Livro.Preco}");

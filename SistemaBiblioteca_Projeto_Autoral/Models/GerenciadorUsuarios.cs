@@ -15,6 +15,10 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             this.context = context;
         }
 
+        public Usuario Login(string email, string senha)
+        {
+            return context.Usuarios.FirstOrDefault(user => user.Email.Equals(email) && user.Senha.Equals(senha));
+        }   
 
         public string AdicionarUsuario(Usuario usuario)
         {

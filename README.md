@@ -33,17 +33,30 @@ Com isso, a Fase 1 do roadmap (modelagem do domínio) está concluída — todas
 - A maioria dos pontos onde o usuário digita um número usa `TryParse`, para evitar que uma entrada inválida quebre o programa.
 - Opção 7 encerra o programa.
 
-Com isso, a Fase 2 do roadmap (orquestração em memória) está praticamente concluída — o fluxo completo (cadastro, catálogo, carrinho, finalização de pedido) já funciona de ponta a ponta pelo console. Alguns ajustes pontuais ainda estão sendo testados e corrigidos.
+Com isso, a Fase 2 do roadmap (orquestração em memória) está concluída — o fluxo completo (cadastro, catálogo, carrinho, finalização de pedido) funciona de ponta a ponta pelo console.
 
-**Próximos passos:** Fase 3 do roadmap — persistência com Entity Framework Core, substituindo as listas em memória por um banco de dados real.
+**Parte 4**
+
+- Projeto conectado a um banco MySQL real via Entity Framework Core (pacotes `Pomelo.EntityFrameworkCore.MySql`, `Microsoft.EntityFrameworkCore.Tools` e `.Design`). Criada a classe `AppDbContext`, com um `DbSet<T>` para cada entidade (`Usuario`, `Livro`, `Carrinho`, `ItemCarrinho`, `Pedido`, `ItemPedido`) e a connection string configurada em `OnConfiguring`.
+- Geradas e aplicadas as migrations (`Add-Migration` / `Update-Database`), criando as tabelas no banco a partir das classes já existentes — sem precisar recriar a modelagem feita nas fases anteriores.
+- Cada classe de domínio (`Livro`, `Carrinho`, `ItemCarrinho`, `Pedido`, `ItemPedido`) ganhou um construtor privado adicional, sem parâmetros, usado exclusivamente pelo EF Core para reconstruir os objetos ao ler dados do banco — o construtor público, que exige todos os dados obrigatórios, continua sendo o único usado pelo resto do código.
+- `Catalogo` migrada para consultar e persistir livros direto no banco (usando LINQ: `Where`, `Any`, `FirstOrDefault`, `Sum`), no lugar da lista em memória. Criada a classe `GerenciadorUsuarios`, seguindo o mesmo padrão, responsável por cadastrar usuários no banco (com checagem de duplicata por email e documento) e autenticar login (`Login`, buscando por email e senha).
+- Adicionado controle de acesso: a propriedade `EhAdministrador` em `Usuario` (sempre `false` por padrão, só alterável direto no banco) restringe adicionar e remover livros do catálogo a usuários administradores, mantendo a busca e listagem livres para qualquer um.
+- `Carrinho` também passou a persistir no banco: ao ser criado, salva a si mesmo imediatamente (ganhando um `Id` real). Cada `ItemCarrinho` guarda uma referência (`CarrinhoId`) para o carrinho a que pertence, permitindo consultas corretamente isoladas por usuário. `FinalizarCarrinho` agora salva o `Pedido` e os `ItemPedido` resultantes no banco de verdade, e remove os itens do carrinho após a compra.
+- Implementado login de verdade (`case "2"` do submenu de usuário): ao logar, o sistema busca se o usuário já tem um carrinho salvo no banco e reaproveita ele, em vez de sempre criar um novo — o carrinho agora sobrevive mesmo fechando e abrindo o programa novamente.
+
+Com isso, a Fase 3 do roadmap (persistência com banco de dados) está concluída.
+
+**Próximos passos:** Fase 4 do roadmap — hash de senha (substituir o armazenamento em texto puro), expor o sistema como Web API com ASP.NET Core, e testes automatizados com xUnit.
 
 ## Tecnologias
 
-Já em uso: C#, .NET 10, orientação a objetos.
+Já em uso: C#, .NET 10, orientação a objetos, Entity Framework Core, MySQL.
 
-Planejadas: Entity Framework Core (persistência em banco de dados), ASP.NET Core Web API.
+Planejadas: ASP.NET Core Web API, xUnit.
 
 ## Como rodar
 
-1. Abra a pasta `SistemaBiblioteca_Projeto_Autoral` no Visual Studio e rode o projeto (F5), ou, via terminal, entre na pasta do projeto e rode `dotnet run`.
-2. O menu interativo aparece no console. Comece pela opção 1 (cadastrar usuário) para poder usar o carrinho, depois explore o catálogo (opção 2) para cadastrar livros antes de adicioná-los ao carrinho.
+1. Tenha um servidor MySQL rodando localmente, e ajuste a connection string em `Data/AppDbContext.cs` se necessário (usuário, senha, porta).
+2. Abra a pasta `SistemaBiblioteca_Projeto_Autoral` no Visual Studio e rode o projeto (F5), ou, via terminal, entre na pasta do projeto e rode `dotnet run`. As tabelas já existem via migrations (`Update-Database`), então o banco `livraria_db` é criado automaticamente na primeira execução, se ainda não existir.
+3. O menu interativo aparece no console. Cadastre um usuário (opção 1 → 1) ou faça login (opção 1 → 2), cadastre livros no catálogo (exige um usuário administrador, definido diretamente no banco) e explore o restante do fluxo: catálogo, carrinho e finalização de pedido.
