@@ -44,9 +44,9 @@ Inclui:
 - Login real (busca por email/senha no banco), que reaproveita o carrinho existente do usuário em vez de criar um novo a cada sessão.
 - Uso de `Include()` para carregamento adiantado (eager loading) de relacionamentos (`Livro` dentro de `ItemCarrinho`), evitando erros de referência nula ao acessar dados relacionados que o EF Core não carrega automaticamente por padrão.
 
-## Fase 4 — Melhorias futuras
+## Fase 4 — Melhorias futuras (em andamento)
 
-- Hash de senha: substituir o armazenamento em texto puro por um hash seguro (ex: biblioteca BCrypt.Net-Next), já que senha nunca deveria ficar salva de forma legível.
+- **Hash de senha — concluído.** Substituído o armazenamento em texto puro por hash com `BCrypt.Net-Next`: a propriedade `Senha` em `Usuario` já grava o hash (`BCrypt.HashPassword`), nunca o texto original. `Login`, em `GerenciadorUsuarios`, busca o usuário só pelo email (traduzível para SQL) e depois compara a senha digitada com o hash salvo usando `BCrypt.Verify` (comparação feita em código, não no banco).
 - Expor o sistema como Web API (ASP.NET Core), testável via Swagger — formato mais alinhado com o que aparece nas vagas de estágio backend, sem precisar construir uma interface visual (frontend).
 - Testes automatizados (xUnit) para validar as regras de negócio sem precisar testar manualmente toda vez.
 

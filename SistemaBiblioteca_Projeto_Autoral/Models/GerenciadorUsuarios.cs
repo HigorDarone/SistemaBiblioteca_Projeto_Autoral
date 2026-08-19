@@ -17,7 +17,16 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
 
         public Usuario Login(string email, string senha)
         {
-            return context.Usuarios.FirstOrDefault(user => user.Email.Equals(email) && user.Senha.Equals(senha));
+            Usuario UsuarioEncontrado = context.Usuarios.FirstOrDefault(user => user.Email.Equals(email));
+
+            if (UsuarioEncontrado != null)
+           {
+               if(BCrypt.Net.BCrypt.Verify(senha, UsuarioEncontrado.Senha) == true)
+               {
+                   return UsuarioEncontrado;
+               }
+           }
+            return null;
         }   
 
         public string AdicionarUsuario(Usuario usuario)

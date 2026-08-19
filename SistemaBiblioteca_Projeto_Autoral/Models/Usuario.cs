@@ -31,7 +31,9 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
         private string senha;
         public string Senha 
         { get { return senha; }
-          private set { senha = Validador.ValidarTexto(value, "Senha"); }
+          private set { senha = Validador.ValidarTexto(value, "Senha");
+                        senha = BCrypt.Net.BCrypt.HashPassword(senha);
+          }
         }
 
         public bool EhAdministrador { get; private set; }

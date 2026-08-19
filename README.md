@@ -47,11 +47,18 @@ Com isso, a Fase 2 do roadmap (orquestração em memória) está concluída — 
 
 Com isso, a Fase 3 do roadmap (persistência com banco de dados) está concluída.
 
-**Próximos passos:** Fase 4 do roadmap — hash de senha (substituir o armazenamento em texto puro), expor o sistema como Web API com ASP.NET Core, e testes automatizados com xUnit.
+**Parte 5**
+
+- Implementado hash de senha com a biblioteca `BCrypt.Net-Next`: a propriedade `Senha` em `Usuario` valida o texto digitado e, em seguida, já armazena o hash gerado por `BCrypt.HashPassword`, nunca o texto puro.
+- `Login` (em `GerenciadorUsuarios`) ajustado para buscar o usuário só pelo email (etapa traduzível para SQL) e, com o usuário em mãos, comparar a senha digitada com o hash salvo usando `BCrypt.Verify` — que não pode ser traduzido para SQL, por isso a comparação acontece em código, depois da consulta.
+
+Com isso, a primeira melhoria da Fase 4 está concluída — mesmo com acesso ao banco de dados, não é possível recuperar a senha original de nenhum usuário.
+
+**Próximos passos:** Fase 4 do roadmap — expor o sistema como Web API com ASP.NET Core, e testes automatizados com xUnit.
 
 ## Tecnologias
 
-Já em uso: C#, .NET 10, orientação a objetos, Entity Framework Core, MySQL.
+Já em uso: C#, .NET 10, orientação a objetos, Entity Framework Core, MySQL, BCrypt.Net-Next.
 
 Planejadas: ASP.NET Core Web API, xUnit.
 
