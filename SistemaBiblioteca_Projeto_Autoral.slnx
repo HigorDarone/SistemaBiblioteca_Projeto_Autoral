@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="SistemaBiblioteca_Dominio/SistemaBiblioteca_Dominio.csproj" Id="0cf6ab75-5950-414a-a2c6-fafd17c25a70" />
   <Project Path="SistemaBiblioteca_Projeto_Autoral/SistemaBiblioteca_Projeto_Autoral.csproj" />
+  <Project Path="SistemaBiblioteca_WebApi/SistemaBiblioteca_WebApi.csproj" Id="a5caa420-92f6-40ff-a5b9-cb731a2c3065" />
 </Solution>

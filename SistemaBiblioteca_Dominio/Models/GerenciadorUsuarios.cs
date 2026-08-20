@@ -33,7 +33,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
         {
             if (context.Usuarios.Any(user => user.Documento.Equals(usuario.Documento) || user.Email.Equals(usuario.Email)))
             {
-                return $"Usuário com documento '{usuario.Documento}' ou email '{usuario.Email}' já existe.";
+                throw new ArgumentException($"Usuário com documento '{usuario.Documento}' ou email '{usuario.Email}' já existe.");
             }
             context.Usuarios.Add(usuario);
             context.SaveChanges();

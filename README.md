@@ -54,16 +54,27 @@ Com isso, a Fase 3 do roadmap (persistência com banco de dados) está concluíd
 
 Com isso, a primeira melhoria da Fase 4 está concluída — mesmo com acesso ao banco de dados, não é possível recuperar a senha original de nenhum usuário.
 
-**Próximos passos:** Fase 4 do roadmap — expor o sistema como Web API com ASP.NET Core, e testes automatizados com xUnit.
+**Parte 6**
+
+- Solução reorganizada em três projetos: o Console original (`SistemaBiblioteca_Projeto_Autoral`), uma nova biblioteca de classes `SistemaBiblioteca_Dominio` (contendo `Data`, `Models` e `Utils`, compartilhados entre os projetos) e um novo `SistemaBiblioteca_WebApi` (ASP.NET Core, baseado em Controllers). Referências de mão única: Console e WebApi dependem de Dominio, nunca o contrário.
+- Documentação e teste interativo da API via **Scalar** (`Scalar.AspNetCore`), escolhido no lugar do Swashbuckle por um conflito de versão conhecido entre ele e o .NET 10.
+- `LivrosController` criado com seis endpoints: listar todos, buscar por nome, buscar por gênero, buscar por Id (com tratamento de não encontrado), adicionar e remover livro.
+- `UsuariosController` criado com endpoints de cadastro e login. Criadas classes DTO (`CadastroRequest` e `LoginRequest`), usadas como parâmetro dos endpoints no lugar das classes de domínio — isso evita que a validação e o hash de senha, que rodam dentro do construtor de `Usuario`, disparem durante a própria desserialização do JSON (antes do código do controller sequer rodar), o que gerava erros 500 crus e não tratados. Com o DTO, o `Usuario` só é criado dentro do corpo do método, dentro de um `try`/`catch`.
+- Erros tratados distinguindo `ArgumentException` (dado inválido, vindo do `Validador`) de `InvalidOperationException` (regra de negócio violada, como usuário duplicado), convertidos respectivamente em `400 Bad Request` e `409 Conflict`. Login com credenciais inválidas retorna `401 Unauthorized`.
+- Corrigido um bug em que o EF Core, ao ler um `Usuario` já existente do banco, reutilizava o construtor público (o mesmo do cadastro) para remontar o objeto — fazendo a senha, já salva como hash, passar pela propriedade `Senha` de novo e ser hasheada uma segunda vez, quebrando o login. Resolvido com um construtor privado sem parâmetros em `Usuario`, o mesmo padrão já usado em `Carrinho`, `ItemCarrinho` e `Pedido`.
+
+Com isso, a primeira parte da Web API da Fase 4 (usuários e livros) está concluída.
+
+**Próximos passos:** Fase 4 do roadmap — expor `Carrinho` e `Pedido` como endpoints na Web API, e testes automatizados com xUnit.
 
 ## Tecnologias
 
-Já em uso: C#, .NET 10, orientação a objetos, Entity Framework Core, MySQL, BCrypt.Net-Next.
+Já em uso: C#, .NET 10, orientação a objetos, Entity Framework Core, MySQL, BCrypt.Net-Next, ASP.NET Core Web API, Scalar.
 
-Planejadas: ASP.NET Core Web API, xUnit.
+Planejadas: xUnit.
 
 ## Como rodar
 
-1. Tenha um servidor MySQL rodando localmente, e ajuste a connection string em `Data/AppDbContext.cs` se necessário (usuário, senha, porta).
-2. Abra a pasta `SistemaBiblioteca_Projeto_Autoral` no Visual Studio e rode o projeto (F5), ou, via terminal, entre na pasta do projeto e rode `dotnet run`. As tabelas já existem via migrations (`Update-Database`), então o banco `livraria_db` é criado automaticamente na primeira execução, se ainda não existir.
-3. O menu interativo aparece no console. Cadastre um usuário (opção 1 → 1) ou faça login (opção 1 → 2), cadastre livros no catálogo (exige um usuário administrador, definido diretamente no banco) e explore o restante do fluxo: catálogo, carrinho e finalização de pedido.
+1. Tenha um servidor MySQL rodando localmente, e ajuste a connection string em `Data/AppDbContext.cs` (dentro do projeto `SistemaBiblioteca_Dominio`) se necessário (usuário, senha, porta).
+2. **Console:** abra a pasta `SistemaBiblioteca_Projeto_Autoral` no Visual Studio e rode o projeto (F5), ou, via terminal, entre na pasta do projeto e rode `dotnet run`. As tabelas já existem via migrations (`Update-Database`), então o banco `livraria_db` é criado automaticamente na primeira execução, se ainda não existir. O menu interativo aparece no console. Cadastre um usuário (opção 1 → 1) ou faça login (opção 1 → 2), cadastre livros no catálogo (exige um usuário administrador, definido diretamente no banco) e explore o restante do fluxo: catálogo, carrinho e finalização de pedido.
+3. **Web API:** rode o projeto `SistemaBiblioteca_WebApi` (F5, com ele definido como projeto de inicialização). A interface do Scalar abre automaticamente em `/scalar/v1`, onde dá pra testar todos os endpoints diretamente pelo navegador.

@@ -45,5 +45,7 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             Email = email;
             Senha = senha;
         }
+
+        private Usuario() { }
     }
 }
