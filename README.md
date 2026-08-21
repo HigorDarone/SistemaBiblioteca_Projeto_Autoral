@@ -65,7 +65,20 @@ Com isso, a primeira melhoria da Fase 4 está concluída — mesmo com acesso ao
 
 Com isso, a primeira parte da Web API da Fase 4 (usuários e livros) está concluída.
 
-**Próximos passos:** Fase 4 do roadmap — expor `Carrinho` e `Pedido` como endpoints na Web API, e testes automatizados com xUnit.
+**Parte 7**
+
+- `CarrinhoController` criado, expondo `Carrinho` como endpoints: adicionar item, listar itens, remover item, remover uma unidade de um item e finalizar o pedido.
+- Como a Web API ainda não tem autenticação de verdade (JWT fica pra uma etapa futura), cada requisição carrega o `usuarioId` explicitamente na URL — uma solução temporária e conhecida, que não seria segura numa aplicação em produção, mas suficiente pra destravar o desenvolvimento agora.
+- Criado um método privado `BuscarOuCriarCarrinho(usuarioId)`, reaproveitado por todos os endpoints do controller, centralizando a lógica de achar (ou criar, se ainda não existir) o carrinho de um usuário — a mesma lógica que já existia no login do Console, agora escrita uma única vez.
+- Criado `BuscarUsuarioPorId` em `GerenciadorUsuarios`, usado pra resolver o `usuarioId` recebido num usuário de verdade.
+- Criadas duas classes DTO novas: `ItemCarrinhoRequest` (recebe `LivroId` e `Quantidade` ao adicionar um item) e `ListarCarrinhoResponse` (agrupa a lista de itens do carrinho junto com o total já calculado, numa resposta só — evitando que quem consome a API precise fazer duas chamadas separadas pra montar uma tela de carrinho).
+- Verbos HTTP escolhidos por semântica: `POST` pra adicionar item e finalizar pedido (ações com efeito colateral), `DELETE` pra remover um item inteiro, `PATCH` pra remover uma unidade de um item (atualização parcial, não remoção total).
+- Erros de estado inválido (como tentar finalizar um carrinho vazio) usam o mesmo padrão já estabelecido no cadastro: `InvalidOperationException` capturada e convertida em `409 Conflict`.
+- Corrigido um `NullReferenceException` em `FinalizarCarrinho` (no domínio), pela mesma causa já vista antes no Console: falta de `.Include()` ao carregar os itens do carrinho, deixando `Livro` nulo dentro de cada `ItemCarrinho`.
+
+Com isso, o `Carrinho` está totalmente exposto pela Web API. Falta ainda um endpoint de histórico de pedidos.
+
+**Próximos passos:** Fase 4 do roadmap — endpoint de histórico de pedidos, e testes automatizados com xUnit.
 
 ## Tecnologias
 

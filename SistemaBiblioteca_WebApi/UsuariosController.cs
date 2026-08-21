@@ -13,7 +13,6 @@ namespace SistemaBiblioteca_WebApi
         {
         private readonly GerenciadorUsuarios gerenciadorUsuarios;
 
-        DTO.CadastroRequest cadastroRequest;
         public UsuariosController(GerenciadorUsuarios gerenciadorUsuarios)
         {
             this.gerenciadorUsuarios = gerenciadorUsuarios;

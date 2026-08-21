@@ -20,14 +20,14 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             Usuario UsuarioEncontrado = context.Usuarios.FirstOrDefault(user => user.Email.Equals(email));
 
             if (UsuarioEncontrado != null)
-           {
-               if(BCrypt.Net.BCrypt.Verify(senha, UsuarioEncontrado.Senha) == true)
-               {
-                   return UsuarioEncontrado;
-               }
-           }
+            {
+                if (BCrypt.Net.BCrypt.Verify(senha, UsuarioEncontrado.Senha) == true)
+                {
+                    return UsuarioEncontrado;
+                }
+            }
             return null;
-        }   
+        }
 
         public string AdicionarUsuario(Usuario usuario)
         {
@@ -38,6 +38,12 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
             context.Usuarios.Add(usuario);
             context.SaveChanges();
             return $"Usuário '{usuario.Nome}' adicionado com sucesso.";
+        }
+
+
+        public Usuario BuscarUsuarioPorId(int id)
+        {
+            return context.Usuarios.FirstOrDefault(user => user.Id.Equals(id));
         }
     }
 }

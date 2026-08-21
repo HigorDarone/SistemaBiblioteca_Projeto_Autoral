@@ -104,10 +104,13 @@ namespace SistemaBiblioteca_Projeto_Autoral.Models
         // para que o preço não seja alterado caso o preço do livro mude no futuro
         public Pedido FinalizarCarrinho()
         {
-           var listacarrinho = context.ItemCarrinhos.Where(i => i.CarrinhoId == this.Id).ToList();
+            var listacarrinho = context.ItemCarrinhos.Where(i => i.CarrinhoId == this.Id)
+                .Include(i => i.Livro)
+                .ToList();
 
 
-            if(listacarrinho.Count() == 0)
+
+            if (listacarrinho.Count() == 0)
             {
                 throw new InvalidOperationException("O carrinho está vazio. Não é possível finalizar o pedido.");
             }
